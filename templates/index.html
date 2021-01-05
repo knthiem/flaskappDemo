@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block content %}
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 20px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 20px;word-break:normal;}
+.tg .tg-eh0b{font-size:22px;position:-webkit-sticky;position:sticky;text-align:center;top:-1px;vertical-align:center;
+  will-change:transform}
+.tg .tg-wrg0{font-size:22px;text-align:center;vertical-align:top}
+.tg .tg-cyim{font-size:22px;text-align:center;vertical-align:center}
+.tg .tg-3c8j{font-size:22px;position:-webkit-sticky;position:sticky;text-align:center;top:-1px;vertical-align:center;
+  will-change:transform}
+</style>
+<table class="tg" id="orderTable">
+<thead>
+  <tr>
+    <th class="tg-3c8j">Order</th>
+    <th class="tg-eh0b">Order Number</th>
+    <th class="tg-eh0b">Order Status</th>
+    <th class="tg-eh0b">Tracking</th>
+    <th class="tg-eh0b">Options</th>
+  </tr>
+</thead>
+</table>
+	{% for order in orders %}
+        <script>
+        	var table = document.getElementById("orderTable");
+        	var row = table.insertRow(-1);
+        	var cell1 = row.insertCell(0);
+        	var cell2 = row.insertCell(1);
+        	var cell3 = row.insertCell(2);
+        	var cell4 = row.insertCell(3);
+        	var cell5 = row.insertCell(4);
+        	cell1.classList.add('tg-cyim');
+        	cell1.innerHTML = "<a href='{{url_for('order', order_id=order.id)}}'>{{order.ordername}}</a>";
+        	cell2.classList.add('tg-cyim');
+        	cell2.innerHTML = '{{order.ordernumber}}'
+        	cell3.classList.add('tg-cyim');
+        	cell3.innerHTML = '{{order.orderstatus}}';
+        	cell4.outerHTML = "<td class=\"tg-cyim\"><a href='{{order.trackinglink}}''>Link</a></td>";
+        	cell5.classList.add('tg-cyim');
+        	cell5.innerHTML = "<a class=\"btn btn-secondary btn-sm m-1\" href='{{url_for('order_edit', order_id=order.id)}}'>Edit</a>" +"<button type=\"button\" class=\"btn btn-danger btn-sm m-1\" data-toggle=\"modal\" data-target=\"#deleteModal\">Delete</button>";
+        </script>
+        <!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Delete Order?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="{{url_for('order_delete', order_id=order.id)}}" method="POST">
+        	<input class="btn btn-danger" type="submit" value="Delete">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+    {% endfor %}
+{% endblock content %}

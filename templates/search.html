@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Search</h1>
+    <form name ="uploadForm" onsubmit="Validate(this)" method="post" action="{{url_for('upload_file')}}" enctype="multipart/form-data" action="">
+		<p>
+		Upload .txt file containing list
+		</p>
+		<div><input id="uploadInput" type="file" name="list" accept=".txt"></div>
+		<div><input type="submit" value="Send list"></div>
+    </form>
+	
+	<script>
+	var _validFileExtensions = [".txt"];    
+	function Validate(form) {
+		var arrInputs = form.getElementsByTagName("input");
+		for (var i = 0; i < arrInputs.length; i++) {
+			var input = arrInputs[i];
+			if (input.type == "file") {
+				var sFileName = input.value;
+				if (sFileName.length > 0) {
+					var blnValid = false;
+					for (var j = 0; j < _validFileExtensions.length; j++) {
+						var sCurExtension = _validFileExtensions[j];
+						if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+							blnValid = true;
+							break;
+						}
+					}
+					
+					if (!blnValid) {
+						alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+						return false;
+					}
+				}
+			}
+		}
+	  
+		return true;
+	}
+	</script>
+{% endblock %}

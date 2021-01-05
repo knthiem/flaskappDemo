@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block content %}
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <link type="text/css" href="{{url_for('static', filename='fullcalendar/lib/main.css')}}" rel='stylesheet' />
+    <script src="{{url_for('static', filename='fullcalendar/lib/main.js')}}"></script>
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+			headerToolbar: {
+			        left: 'prev,next today',
+			        center: 'title',
+			        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+			      },
+		    navLinks: true,
+			initialView: 'dayGridMonth',
+			selectable: true,
+
+			select: function(arg) {
+				var title = prompt('Event Title:');
+				if (title) {
+					eventData = {
+	                    title: title,
+	                    start: calendar.formatIso(arg.start),
+	                    end: calendar.formatIso(arg.end),
+	                    allDay: arg.allDay,
+                	};
+			    	calendar.addEvent(eventData)
+			    	$.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    url:"{{url_for('save_event_data')}}",
+                    data:  JSON.stringify({
+	                    "title": title,
+	                    "start": calendar.formatIso(arg.start),
+	                    "end": calendar.formatIso(arg.end),
+	                    "allDay": arg.allDay,
+                	})
+                	})
+                	.done(function(data){
+                        location.reload()
+                    }).fail(function()  {
+                        location.reload()
+                    }); 
+				}
+				calendar.unselect()
+			},
+
+            eventClick: function(info){
+                info.jsEvent.preventDefault();
+                console.log(info.event.id)
+                console.log(info.event.title)
+                var title = prompt('Change Title (Leave blank or cancel to delete):', info.event.title);
+                $.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    url:"{{url_for('update_event_data')}}",
+                    data:  JSON.stringify({
+                        "title": title,
+                        "id" : info.event.id 
+                    })
+                    })
+                    .done(function(data){
+                        location.reload()
+                    }).fail(function()  {
+                        location.reload()
+                    }); 
+                    
+            },
+
+			events: {
+		        url: 'load_data'
+			},
+        });
+        calendar.render();
+      });
+    </script>
+  </head>
+  <body>
+    <div id='calendar'></div>
+  </body>
+</html>
+{% endblock content %}
